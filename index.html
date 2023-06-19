@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Temperature Hot</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background: url(images/bg-image.jpg) no-repeat;
+            background-size: cover;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <form class="col-md-6 m-auto py-5">
+            <div class="input-group mb-3">
+                <input id="city-name" type="text" class="form-control" placeholder="Enter a location for Weather ...">
+                <div class="input-group-append">
+                    <button onclick="searchTemperature()" type="button" class="btn btn-danger">Search</button>
+                </div>
+            </div>
+        </form>
+        <div class="weather-status text-white text-center">
+            <img id="weather-icon" src="" alt="">
+            <h1 id="city">Dhaka</h1>
+            <h3><span id="temperature">38.06</span>&deg;C</h3>
+            <h1 id="condition" class="lead">Clouds</h1>
+        </div>
+    </div>
+    <script>
+        const API_KEY = 'dd90edf1c6769c8b2982ae2c60de72e1';
+        
+        const searchTemperature = () => {
+            const city = document.getElementById('city-name').value;
+            const timestamp = new Date().getTime(); // Get current timestamp
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&_=${timestamp}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => displayTemperature(data))
+                .catch(error => console.log('Error:', error));
+        };
+        
+        const setInnerText = (id, text) => {
+            document.getElementById(id).innerText = text;
+        }
+        
+        const displayTemperature = temperature => {
+            const weatherStatus = document.querySelector('.weather-status');
+            if (temperature.cod === '404') {
+                weatherStatus.style.display = 'none';
+                alert('City not found. Please try again.');
+            } else {
+                weatherStatus.style.display = 'block';
+                setInnerText('city', temperature.name);
+                setInnerText('temperature', temperature.main.temp);
+                setInnerText('condition', temperature.weather[0].main);
+
+                // Set weather icon
+                const iconCode = temperature.weather[0].icon;
+                const iconUrl = `https://openweathermap.org/img/wn/${iconCode}.png`;
+                const imgIcon = document.getElementById('weather-icon');
+                imgIcon.setAttribute('src', iconUrl);
+            }
+        };
+
+    </script>
+</body>
+
+</html>
